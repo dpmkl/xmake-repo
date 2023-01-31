@@ -10,19 +10,17 @@ package("thread-liveness-monitor")
     add_deps("cmake")
 
     on_install(function (package)
-        io.writefile("xmake.lua", [[
-            --add_requires("glm")
+        io.writefile("xmake.lua", [[            
             add_rules("mode.debug", "mode.release")
             target("thread-liveness-monitor")
                 set_kind("static")
-                add_includedirs("src")
+                add_headerfiles("src/thread_monitor/thread_monitor.h", 
+                                "src/thread_monitor/thread_monitor_central_repository.h",
+                                { prefixdir = "thread_monitor" } )
                 add_files("thread_monitor.cpp", "thread_monitor_central_repository.cpp")
+                add_rules("utils.install.cmake_importfiles")
+                add_rules("utils.install.pkgconfig_importfiles")                
         ]])
-
-        local configs = {}
-        if package:config("shared") then
-            configs.kind = "shared"
-        end
         import("package.tools.xmake").install(package, config)
     end)
 
